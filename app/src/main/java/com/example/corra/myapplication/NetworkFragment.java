@@ -1,13 +1,17 @@
 package com.example.corra.myapplication;
 
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -22,8 +26,6 @@ import javax.net.ssl.HttpsURLConnection;
 public class NetworkFragment extends Fragment {
     public static final String TAG = "NetworkFragment";
 
-    private static final String URL_KEY = "AIzaSyDHxv1u18M4WM3r4BrGyKM9IBSlntwb1DQ";
-
     private DownloadCallback mCallback;
     private DownloadTask mDownloadTask;
     private String mUrlString;
@@ -32,18 +34,17 @@ public class NetworkFragment extends Fragment {
      * Static initializer for NetworkFragment that sets the URL of the host it will be downloading
      * from.
      */
-    public static NetworkFragment getInstance(FragmentManager fragmentManager, String url) {
+    public static NetworkFragment getInstance(FragmentManager fragmentManager) {
         // Recover NetworkFragment in case we are re-creating the Activity due to a config change.
         // This is necessary because NetworkFragment might have a task that began running before
         // the config change occurred and has not finished yet.
         // The NetworkFragment is recoverable because it calls setRetainInstance(true).
         NetworkFragment networkFragment = (NetworkFragment) fragmentManager
                 .findFragmentByTag(NetworkFragment.TAG);
+
         if (networkFragment == null) {
             networkFragment = new NetworkFragment();
             Bundle args = new Bundle();
-            args.putString(URL_KEY, url);
-            networkFragment.setArguments(args);
             fragmentManager.beginTransaction().add(networkFragment, TAG).commit();
         }
         return networkFragment;
@@ -54,8 +55,6 @@ public class NetworkFragment extends Fragment {
         // Retain this Fragment across configuration changes in the host Activity.
         setRetainInstance(true);
         super.onCreate(savedInstanceState);
-        mUrlString = getArguments().getString(URL_KEY);
-
     }
 
     @Override
@@ -82,8 +81,9 @@ public class NetworkFragment extends Fragment {
     /**
      * Start non-blocking execution of DownloadTask.
      */
-    public void startDownload() {
+    public void startDownload(String url) {
         cancelDownload();
+        mUrlString = url;
         mDownloadTask = new DownloadTask();
         mDownloadTask.execute(mUrlString);
     }
@@ -223,10 +223,16 @@ public class NetworkFragment extends Fragment {
                 stream = connection.getInputStream();
                 publishProgress(DownloadCallback.Progress.GET_INPUT_STREAM_SUCCESS, 0);
                 if (stream != null) {
-                    // Converts Stream to String with max length of 500.
-                    result = readStream(stream, 500);
+                    // Converts Stream to String with max length of maxResultLength.
+                    JSONParser jsonParser = new JSONParser();
+                    JSONObject jsonObject = (JSONObject)jsonParser.parse(
+                            new InputStreamReader(stream, "UTF-8")
+                    );
+                    result = jsonObject.toString();//readStream(stream, maxResultLength);
                     publishProgress(DownloadCallback.Progress.PROCESS_INPUT_STREAM_SUCCESS, 0);
                 }
+            } catch (ParseException e) {
+                e.printStackTrace();
             } finally {
                 // Close Stream and disconnect HTTPS connection.
                 if (stream != null) {
@@ -235,34 +241,6 @@ public class NetworkFragment extends Fragment {
                 if (connection != null) {
                     connection.disconnect();
                 }
-            }
-            return result;
-        }
-
-        /**
-         * Converts the contents of an InputStream to a String.
-         */
-        private String readStream(InputStream stream, int maxLength) throws IOException {
-            String result = null;
-            // Read InputStream using the UTF-8 charset.
-            InputStreamReader reader = new InputStreamReader(stream, "UTF-8");
-            // Create temporary buffer to hold Stream data with specified max length.
-            char[] buffer = new char[maxLength];
-            // Populate temporary buffer with Stream data.
-            int numChars = 0;
-            int readSize = 0;
-            while (numChars < maxLength && readSize != -1) {
-                numChars += readSize;
-                int pct = (100 * numChars) / maxLength;
-                publishProgress(DownloadCallback.Progress.PROCESS_INPUT_STREAM_IN_PROGRESS, pct);
-                readSize = reader.read(buffer, numChars, buffer.length - numChars);
-            }
-            if (numChars != -1) {
-                // The stream was not empty.
-                // Create String that is actual length of response body if actual length was less than
-                // max length.
-                numChars = Math.min(numChars, maxLength);
-                result = new String(buffer, 0, numChars);
             }
             return result;
         }

@@ -17,11 +17,12 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 
 public class MainActivity extends FragmentActivity implements DownloadCallback {
-
 
     // Keep a reference to the NetworkFragment, which owns the AsyncTask object
     // that is used to execute network ops.
@@ -35,8 +36,6 @@ public class MainActivity extends FragmentActivity implements DownloadCallback {
     private EditText mTxtSearchFilm;
     private Button mBtnSearch;
     private ListView mLstShowFilm;
-
-    public final static String API_KEY = "AIzaSyDHxv1u18M4WM3r4BrGyKM9IBSlntwb1DQ";
 
     private void hideElements(View... elements){
         for (View elem: elements) {
@@ -64,7 +63,7 @@ public class MainActivity extends FragmentActivity implements DownloadCallback {
                     return true;
                 case R.id.navigation_search:
                     showElements(mTxtSearchFilm, mBtnSearch);
-                    hideElements(mLstShowFilm);
+                    //hideElements(mLstShowFilm);
                     mTxtTitle.setText(R.string.title_search);
                     return true;
                 case R.id.navigation_advice_list:
@@ -89,30 +88,54 @@ public class MainActivity extends FragmentActivity implements DownloadCallback {
         BottomNavigationView navigation = findViewById(R.id.navigation);
 
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
-        //mNetworkFragment = NetworkFragment.getInstance(getSupportFragmentManager(),
-        //        "https://kgsearch.googleapis.com/v1/entities:search");
-        System.out.println("State " + this.getActiveNetworkInfo());
+        mNetworkFragment = NetworkFragment.getInstance(getSupportFragmentManager());
 
         /* Retrieve advice from DB */
         retrieveMovies();
     }
 
+    /* Send the request to get the movie list, onClick of the user */
     public void searchMovie(View view){
-        JSONArray elements = Utilities.searchMovieOnline(mTxtSearchFilm.getText().toString());
-        /*System.out.println("The element is " + elements);*/
+        finishDownloading();
+        String url = Movie.searchMovieOnline(mTxtSearchFilm.getText().toString());
+        startDownload(url);
     }
 
+    /* Retrieve movie to see from the DB*/
     private void retrieveMovies(){
-        System.out.println("Retrieve Movies");
         ArrayList<String> myStringArray = new ArrayList<>();
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
                 android.R.layout.simple_list_item_1, myStringArray);
         mLstShowFilm.setAdapter(adapter);
     }
 
+    public void UpdateMovieSearchList(String result){
+        try {
+            JSONObject obj = new JSONObject(result);
+            JSONArray list = obj.getJSONArray("results");
+            ArrayList<Movie> movie_list = new ArrayList<>();
+            ArrayList<String> myStringArray = new ArrayList<>();
+            for (int i = 0; i<list.length(); i++){
+                movie_list.add(new Movie(list.getJSONObject(i)));
+                myStringArray.add(movie_list.get(i).toString());
+            }
+            ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
+                    android.R.layout.simple_list_item_1, myStringArray);
+            mLstShowFilm.setAdapter(adapter);
+        }
+        catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /* Networking routines */
     @Override
     public void updateFromDownload(String result) {
-        // Update your UI here based on result of download.
+        if (result != null) {
+            UpdateMovieSearchList(result);
+        } else {
+            System.out.println("Error! " + getString(R.string.connection_error));
+        }
     }
 
     @Override
@@ -142,6 +165,14 @@ public class MainActivity extends FragmentActivity implements DownloadCallback {
             case Progress.PROCESS_INPUT_STREAM_SUCCESS:
             //...
                 break;
+        }
+    }
+
+    private void startDownload(String url) {
+        if (!mDownloading && mNetworkFragment != null) {
+            // Execute the async download.
+            mNetworkFragment.startDownload(url);
+            mDownloading = true;
         }
     }
 
