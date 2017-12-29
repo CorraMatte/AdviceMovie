@@ -10,7 +10,7 @@
     <TextView
         android:id="@+id/txtSettings"
         android:layout_width="wrap_content"
-        android:layout_height="39dp"
+        android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:text="@string/settings"
         android:textSize="30sp"
@@ -18,5 +18,17 @@
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <ListView
+        android:id="@+id/lstSetting"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/txtSettings" >
+
+    </ListView>
 
 </android.support.constraint.ConstraintLayout>

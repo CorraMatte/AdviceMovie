@@ -34,7 +34,6 @@ SettingsFragment.OnFragmentInteractionListener{
     // that is used to execute network ops.
     private NetworkFragment mNetworkFragment;
 
-
     public static final String MOVIE_SELECTED = "com.example.corra.myapplication.MOVIE_SELECTED";
 
     // Boolean telling us whether a download is in progress, so we don't trigger overlapping
@@ -52,7 +51,6 @@ SettingsFragment.OnFragmentInteractionListener{
                 case R.id.navigation_movie_list:
                     selectedFragment = MovieListFragment.newInstance();
                     /* Retrieve advice from DB */
-                    //retrieveMovies();
                     break;
                 case R.id.navigation_search:
                     selectedFragment = SearchMovieFragment.newInstance();
@@ -81,21 +79,13 @@ SettingsFragment.OnFragmentInteractionListener{
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
         mNetworkFragment = NetworkFragment.getInstance(getSupportFragmentManager());
 
-        /* Retrieve advice from DB */
         //Manually displaying the first fragment - one time only
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.frame_layout, MovieListFragment.newInstance());
         transaction.commit();
 
+        /* Retrieve advice from DB */
         //retrieveMovies();
-    }
-
-    /* Send the request to get the movie list, onClick of the user */
-    public void searchMovie(View view){
-        finishDownloading();
-        EditText mTxtSearchMovie = (EditText) findViewById(R.id.txtSearchMovie);
-        String url = Movie.searchMovieOnline(mTxtSearchMovie.getText().toString());
-        startDownload(url);
     }
 
     /* Retrieve movie to see from the DB*/
@@ -107,18 +97,44 @@ SettingsFragment.OnFragmentInteractionListener{
         mLstShowMovie.setAdapter(adapter);
     }
 
+    public void setSettings(){
+        ArrayList<String> SETTINGS = new ArrayList<>();
+        ListView lstSetting = (ListView) findViewById(R.id.lstSetting);
+        SETTINGS.add("About");
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
+                android.R.layout.simple_list_item_1, SETTINGS);
+        lstSetting.setAdapter(adapter);
+        lstSetting.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                switch ((int) id) {
+                    case 0:
+                        Intent intent = new Intent(view.getContext(), AboutActivity.class);
+                        startActivity(intent);
+                }
+            }
+        });
+    }
+
+    /* Send the request to get the movie list, onClick of the user */
+    public void searchMovie(View view){
+        finishDownloading();
+        EditText mTxtSearchMovie = (EditText) findViewById(R.id.txtSearchMovie);
+        String url = Movie.searchMovieOnline(mTxtSearchMovie.getText().toString());
+        startDownload(url);
+    }
+
     public void UpdateMovieSearchList(String result){
         try {
             JSONObject obj = new JSONObject(result);
             JSONArray list = obj.getJSONArray("results");
             final ArrayList<Movie> movie_list = new ArrayList<>();
-            ArrayList<String> myStringArray = new ArrayList<>();
+            ArrayList<String> movieTitles = new ArrayList<>();
             for (int i = 0; i<list.length(); i++){
                 movie_list.add(new Movie(list.getJSONObject(i)));
-                myStringArray.add(movie_list.get(i).toString());
+                movieTitles.add(movie_list.get(i).toString());
             }
             ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
-                    android.R.layout.simple_list_item_1, myStringArray);
+                    android.R.layout.simple_list_item_1, movieTitles);
 
             ListView mLstShowMovie = (ListView) findViewById(R.id.lstShowSearchedMovie);
             mLstShowMovie.setAdapter(adapter);
