@@ -34,10 +34,10 @@
 
     <Button
         android:id="@+id/btnSearch"
+        style="@style/Widget.AppCompat.Button.Colored"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
-        android:layout_marginRight="16dp"
         android:onClick="searchMovie"
         android:text="@string/title_search"
         app:layout_constraintBaseline_toBaselineOf="@+id/txtSearchMovie"
