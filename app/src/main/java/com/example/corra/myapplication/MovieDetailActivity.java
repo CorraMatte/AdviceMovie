@@ -10,9 +10,9 @@ import android.widget.TextView;
 
 import java.io.InputStream;
 
-public class MovieDetail extends AppCompatActivity {
+public class MovieDetailActivity extends AppCompatActivity {
 
-    private static String URL_IMAGE = "https://image.tmdb.org/t/p/w500";
+    final String URL_IMAGE = "https://image.tmdb.org/t/p/w500";
 
     private TextView txtDetailTitle;
     private TextView txtDetailOrigTitle;
@@ -42,19 +42,17 @@ public class MovieDetail extends AppCompatActivity {
         String orig_title = "(" + movie.original_title + ")";
         txtDetailOrigTitle.setText(orig_title);
 
-        String rate = getString(R.string.txt_detail_rate);;
+        String rate = getString(R.string.txt_detail_rate) + " ";
         if (movie.vote_average != 0) rate += movie.vote_average.toString();
         else rate += "-";
         txtDetailRate.setText(rate);
 
-        String overview = getString(R.string.txt_overview_title);
-        if (movie.overview.equals("")) overview += "Non disponibile";
-        else overview += movie.overview;
+        String overview;
+        if (movie.overview.equals("")) overview = "Non disponibile";
+        else overview = movie.overview;
         txtDetailOverview.setText(overview);
 
-        if (movie.poster_path.equals(""))
-            imgDetail.setImageResource(R.drawable.ic_notifications_black_24dp);
-        else {
+        if (!movie.poster_path.equals("")){
             String url = URL_IMAGE + movie.poster_path;
 
             // show The Image in a ImageView

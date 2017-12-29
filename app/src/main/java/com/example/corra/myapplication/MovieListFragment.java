@@ -7,6 +7,10 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+
+import java.util.ArrayList;
 
 
 /**
@@ -24,10 +28,23 @@ public class MovieListFragment extends Fragment {
     private static final String ARG_PARAM2 = "param2";
 
     // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
 
     private OnFragmentInteractionListener mListener;
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState){
+        super.onActivityCreated(savedInstanceState);
+        retrieveMovies();
+    }
+
+    /* Retrieve movie to see from the DB*/
+    private void retrieveMovies(){
+        ListView mLstShowMovie = (ListView) getActivity().findViewById(R.id.lstShowMovie);
+        ArrayList<String> myStringArray = new ArrayList<>();
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(),
+                android.R.layout.simple_list_item_1, myStringArray);
+        mLstShowMovie.setAdapter(adapter);
+    }
 
     public MovieListFragment() {
         // Required empty public constructor
@@ -36,9 +53,6 @@ public class MovieListFragment extends Fragment {
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
      * @return A new instance of fragment MovieListFragment.
      */
     // TODO: Rename and change types and number of parameters
@@ -53,8 +67,6 @@ public class MovieListFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
         }
     }
 

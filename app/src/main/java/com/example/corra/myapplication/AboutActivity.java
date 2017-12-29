@@ -1,8 +1,7 @@
 package com.example.corra.myapplication;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.widget.TextView;
+import android.support.v7.app.AppCompatActivity;
 
 public class AboutActivity extends AppCompatActivity {
 
@@ -12,8 +11,5 @@ public class AboutActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_about);
-
-        TextView txtInfo = (TextView) findViewById(R.id.txtAbout);
-        txtInfo.setText(getString(R.string.about_info));
     }
 }

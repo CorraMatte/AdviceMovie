@@ -44,7 +44,7 @@
                 <data android:scheme="@string/fb_login_protocol_scheme" />
             </intent-filter>
         </activity>
-        <activity android:name=".MovieDetail"></activity>
+        <activity android:name=".MovieDetailActivity"></activity>
     </application>
 
 </manifest>

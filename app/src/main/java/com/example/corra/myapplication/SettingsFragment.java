@@ -35,6 +35,12 @@ public class SettingsFragment extends Fragment {
 
     private OnFragmentInteractionListener mListener;
 
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState){
+        super.onActivityCreated(savedInstanceState);
+        setSettings();
+    }
+
     public SettingsFragment() {
         // Required empty public constructor
 
@@ -65,7 +71,6 @@ public class SettingsFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
-
     }
 
     @Override
@@ -73,7 +78,6 @@ public class SettingsFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_settings, container, false);
-
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -113,5 +117,23 @@ public class SettingsFragment extends Fragment {
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
+    }
+
+    public void setSettings(){
+        ArrayList<String> SETTINGS = new ArrayList<>();
+        ListView lstSetting = (ListView) getActivity().findViewById(R.id.lstSetting);
+        SETTINGS.add("About");
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(),
+                android.R.layout.simple_list_item_1, SETTINGS);
+        lstSetting.setAdapter(adapter);
+        lstSetting.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                switch ((int) id) {
+                    case 0:
+                        Intent intent = new Intent(view.getContext(), AboutActivity.class);
+                        startActivity(intent);
+                }
+            }
+        });
     }
 }

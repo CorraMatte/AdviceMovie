@@ -62,8 +62,10 @@ SettingsFragment.OnFragmentInteractionListener{
                     selectedFragment = SettingsFragment.newInstance();
                     break;
             }
+
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
             transaction.replace(R.id.frame_layout, selectedFragment);
+            transaction.addToBackStack(null);
             transaction.commit();
             return true;
         }
@@ -83,6 +85,11 @@ SettingsFragment.OnFragmentInteractionListener{
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.frame_layout, MovieListFragment.newInstance());
         transaction.commit();
+
+        ListView mLstShowMovie = (ListView) findViewById(R.id.lstShowMovie);
+        ListView lstSetting = (ListView) findViewById(R.id.lstSetting);
+        System.out.println(lstSetting);
+        System.out.println(mLstShowMovie);
 
         /* Retrieve advice from DB */
         //retrieveMovies();
@@ -140,7 +147,7 @@ SettingsFragment.OnFragmentInteractionListener{
             mLstShowMovie.setAdapter(adapter);
             mLstShowMovie.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    Intent intent = new Intent(view.getContext(), MovieDetail.class);
+                    Intent intent = new Intent(view.getContext(), MovieDetailActivity.class);
                     intent.putExtra(MOVIE_SELECTED, movie_list.get(position));
                     startActivity(intent);
                 }
