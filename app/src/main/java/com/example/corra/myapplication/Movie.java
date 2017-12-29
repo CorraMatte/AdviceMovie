@@ -1,5 +1,8 @@
 package com.example.corra.myapplication;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -7,7 +10,7 @@ import org.json.JSONObject;
  * Created by corra on 28/12/17.
  */
 
-public class Movie {
+public class Movie implements Parcelable{
     static final String API_KEY_TMDB = "6d2ad88449829f6c94c1ee93d859a1fd";
     static final String LANG = "it-IT";
     static final  String DOMAIN = "https://api.themoviedb.org/3/search/movie?";
@@ -28,6 +31,15 @@ public class Movie {
         this.release_date = obj.getString("release_date");
     }
 
+    Movie(Parcel in) {
+        this.title = in.readString();
+        this.original_title = in.readString();
+        this.vote_average = in.readDouble();
+        this.overview = in.readString();
+        this.release_date = in.readString();
+        this.poster_path = in.readString();
+    }
+
     @Override
     public String toString(){
         return this.title;
@@ -40,4 +52,30 @@ public class Movie {
     }
 
 
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeString(this.title);
+        parcel.writeString(this.original_title);
+        parcel.writeDouble(this.vote_average);
+        parcel.writeString(this.overview);
+        parcel.writeString(this.release_date);
+        parcel.writeString(this.poster_path);
+    }
+
+    // This is to de-serialize the object
+    public static final Parcelable.Creator<Movie> CREATOR = new Parcelable.Creator<Movie>(){
+        public Movie createFromParcel(Parcel in) {
+            return new Movie(in);
+        }
+
+        public Movie[] newArray(int size) {
+            return new Movie[size];
+        }
+    };
 }
+
