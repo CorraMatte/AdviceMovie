@@ -9,6 +9,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
+
+import com.facebook.AccessToken;
+import com.facebook.GraphRequest;
+import com.facebook.GraphResponse;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 
@@ -22,19 +30,40 @@ import java.util.ArrayList;
  * create an instance of this fragment.
  */
 public class MovieListFragment extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-
     private OnFragmentInteractionListener mListener;
+    private TextView txtListWelcolme;
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState){
         super.onActivityCreated(savedInstanceState);
+        txtListWelcolme = (TextView) getActivity().findViewById(R.id.txtListWelcolme);
+        setFacebookName();
         retrieveMovies();
+    }
+
+    private void setFacebookName(){
+        AccessToken accessToken = AccessToken.getCurrentAccessToken();
+        GraphRequest request = GraphRequest.newGraphPathRequest(
+                accessToken,
+                "/" + accessToken.getUserId(),
+                new GraphRequest.Callback() {
+                    @Override
+                    public void onCompleted(GraphResponse response) {
+                        // Insert your code here
+                        JSONObject obj = response.getJSONObject();
+                        try {
+                            String welcome = getString(R.string.title_movie_list) +  " "  +
+                                            obj.getString("first_name");
+                            txtListWelcolme.setText(welcome);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+        Bundle parameters = new Bundle();
+        parameters.putString("fields", "first_name");
+        request.setParameters(parameters);
+        request.executeAsync();
     }
 
     /* Retrieve movie to see from the DB*/

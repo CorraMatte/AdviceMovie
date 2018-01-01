@@ -18,6 +18,7 @@ public class MovieDetailActivity extends AppCompatActivity {
     private TextView txtDetailOrigTitle;
     private TextView txtDetailRate;
     private TextView txtDetailOverview;
+    private TextView txtReleaseDate;
     private ImageView imgDetail;
 
     @Override
@@ -31,6 +32,7 @@ public class MovieDetailActivity extends AppCompatActivity {
         txtDetailRate = (TextView) findViewById(R.id.txtDetailRate);
         txtDetailOverview = (TextView) findViewById(R.id.txtDetailOverview);
         imgDetail = (ImageView) findViewById(R.id.imgDetail);
+        txtReleaseDate = (TextView) findViewById(R.id.txtReleaseDate);
 
         Movie movie = (Movie) getIntent().getParcelableExtra(MainActivity.MOVIE_SELECTED);
         fillLayout(movie);
@@ -47,17 +49,20 @@ public class MovieDetailActivity extends AppCompatActivity {
         else rate += "-";
         txtDetailRate.setText(rate);
 
-        String overview;
-        if (movie.overview.equals("")) overview = "Non disponibile";
-        else overview = movie.overview;
+        String overview = "";
+        if (!movie.overview.equals("")) overview = movie.overview;
         txtDetailOverview.setText(overview);
 
         if (!movie.poster_path.equals("")){
             String url = URL_IMAGE + movie.poster_path;
-
             // show The Image in a ImageView
             new DownloadImageTask(imgDetail).execute(url);
         }
+
+        String release = "";
+        if (!movie.release_date.equals(""))
+            release = getString(R.string.txt_release_date) + " " + movie.release_date;
+        txtReleaseDate.setText(release);
     }
 
     private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {

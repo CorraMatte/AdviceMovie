@@ -85,41 +85,6 @@ SettingsFragment.OnFragmentInteractionListener{
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.frame_layout, MovieListFragment.newInstance());
         transaction.commit();
-
-        ListView mLstShowMovie = (ListView) findViewById(R.id.lstShowMovie);
-        ListView lstSetting = (ListView) findViewById(R.id.lstSetting);
-        System.out.println(lstSetting);
-        System.out.println(mLstShowMovie);
-
-        /* Retrieve advice from DB */
-        //retrieveMovies();
-    }
-
-    /* Retrieve movie to see from the DB*/
-    private void retrieveMovies(){
-        ListView mLstShowMovie = (ListView) findViewById(R.id.lstShowMovie);
-        ArrayList<String> myStringArray = new ArrayList<>();
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
-                android.R.layout.simple_list_item_1, myStringArray);
-        mLstShowMovie.setAdapter(adapter);
-    }
-
-    public void setSettings(){
-        ArrayList<String> SETTINGS = new ArrayList<>();
-        ListView lstSetting = (ListView) findViewById(R.id.lstSetting);
-        SETTINGS.add("About");
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
-                android.R.layout.simple_list_item_1, SETTINGS);
-        lstSetting.setAdapter(adapter);
-        lstSetting.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                switch ((int) id) {
-                    case 0:
-                        Intent intent = new Intent(view.getContext(), AboutActivity.class);
-                        startActivity(intent);
-                }
-            }
-        });
     }
 
     /* Send the request to get the movie list, onClick of the user */
