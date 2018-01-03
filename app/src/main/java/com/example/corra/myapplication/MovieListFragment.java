@@ -1,12 +1,15 @@
 package com.example.corra.myapplication;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -15,9 +18,14 @@ import com.facebook.AccessToken;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 
 
@@ -29,14 +37,17 @@ import java.util.ArrayList;
  * Use the {@link MovieListFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class MovieListFragment extends Fragment {
+public class MovieListFragment extends Fragment{
     private OnFragmentInteractionListener mListener;
     private TextView txtListWelcolme;
+
+    private final String GETADVICE_URL = "/get_advice.php?";
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState){
         super.onActivityCreated(savedInstanceState);
         txtListWelcolme = (TextView) getActivity().findViewById(R.id.txtListWelcolme);
+
         setFacebookName();
         retrieveMovies();
     }
@@ -68,11 +79,41 @@ public class MovieListFragment extends Fragment {
 
     /* Retrieve movie to see from the DB*/
     private void retrieveMovies(){
+        AccessToken accessToken = AccessToken.getCurrentAccessToken();
+        String url = MainActivity.HOST_URL + GETADVICE_URL + "id=" + accessToken.getUserId();
+        getJSON(url);
+    }
+
+    public void UpdateMovieList(String result){
         ListView mLstShowMovie = (ListView) getActivity().findViewById(R.id.lstShowMovie);
-        ArrayList<String> myStringArray = new ArrayList<>();
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(),
-                android.R.layout.simple_list_item_1, myStringArray);
-        mLstShowMovie.setAdapter(adapter);
+        final ArrayList<Movie> movieList = new ArrayList<>();
+        ArrayList<String> movieTitle = new ArrayList<>();
+
+        /* Check the connection, if on download JSON advice list*/
+        try {
+            JSONArray list = new JSONArray(result);
+            for (int i = 0; i<list.length(); i++){
+                movieTitle.add(list.getJSONObject(i).getString("title"));
+                movieList.add(new Movie(list.getJSONObject(i)));
+            }
+
+            ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(),
+                    android.R.layout.simple_list_item_1, movieTitle);
+            mLstShowMovie.setAdapter(adapter);
+
+            mLstShowMovie.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    Intent intent = new Intent(view.getContext(), MovieDetailActivity.class);
+                    intent.putExtra(MainActivity.MOVIE_SELECTED, movieList.get(position));
+                    intent.putExtra("IS_IN_LIST", true);
+                    startActivity(intent);
+                }
+            });
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
     }
 
     public MovieListFragment() {
@@ -128,6 +169,65 @@ public class MovieListFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
+    }
+
+    //this method is actually fetching the json string
+    private void getJSON(final String urlWebService) {
+        /*
+        * As fetching the json string is a network operation
+        * And we cannot perform a network operation in main thread
+        * so we need an AsyncTask
+        * The constrains defined here are
+        * Void -> We are not passing anything
+        * Void -> Nothing at progress update as well
+        * String -> After completion it should return a string and it will be the json string
+        * */
+        class GetJSON extends AsyncTask<Void, Void, String> {
+
+            /*this method will be called before execution you can display a progress bar or something
+            so that user can understand that he should wait as network operation may take some time */
+            @Override
+            protected void onPreExecute() {
+                super.onPreExecute();
+            }
+
+            //this method will be called after execution so here we are displaying a toast with the json string
+            @Override
+            protected void onPostExecute(String s) {
+                super.onPostExecute(s);
+                UpdateMovieList(s);
+            }
+
+            //in this method we are fetching the json string
+            @Override
+            protected String doInBackground(Void... voids) {
+                try {
+                    //creating a URL
+                    URL url = new URL(urlWebService);
+                    //Opening the URL using HttpURLConnection
+                    HttpURLConnection con = (HttpURLConnection) url.openConnection();
+                    //StringBuilder object to read the string from the service
+                    StringBuilder sb = new StringBuilder();
+                    //We will use a buffered reader to read the string from service
+                    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(con.getInputStream()));
+                    //A simple string to read values from each line
+                    String json;
+                    //reading until we don't find null
+                    while ((json = bufferedReader.readLine()) != null) {
+                        //appending it to string builder
+                        sb.append(json + "\n");
+                    }
+                    //finally returning the read string
+                    return sb.toString().trim();
+                } catch (Exception e) {
+                    return null;
+                }
+            }
+        }
+
+        //creating asynctask object and executing it
+        GetJSON getJSON = new GetJSON();
+        getJSON.execute();
     }
 
     /**

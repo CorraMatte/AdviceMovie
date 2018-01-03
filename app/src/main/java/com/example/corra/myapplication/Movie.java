@@ -15,6 +15,7 @@ public class Movie implements Parcelable{
     static final String LANG = "it-IT";
     static final  String DOMAIN = "https://api.themoviedb.org/3/search/movie?";
 
+    public String id;
     public String title;
     public String original_title;
     public Double vote_average;
@@ -23,6 +24,7 @@ public class Movie implements Parcelable{
     public String release_date;
 
     Movie(JSONObject obj) throws JSONException {
+        this.id = obj.getString("id");
         this.title = obj.getString("title");
         this.original_title = obj.getString("original_title");
         this.vote_average = obj.getDouble("vote_average");
@@ -32,6 +34,7 @@ public class Movie implements Parcelable{
     }
 
     Movie(Parcel in) {
+        this.id = in.readString();
         this.title = in.readString();
         this.original_title = in.readString();
         this.vote_average = in.readDouble();
@@ -59,6 +62,7 @@ public class Movie implements Parcelable{
 
     @Override
     public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeString(this.id);
         parcel.writeString(this.title);
         parcel.writeString(this.original_title);
         parcel.writeDouble(this.vote_average);

@@ -35,6 +35,7 @@ SettingsFragment.OnFragmentInteractionListener{
     private NetworkFragment mNetworkFragment;
 
     public static final String MOVIE_SELECTED = "com.example.corra.myapplication.MOVIE_SELECTED";
+    public static final String HOST_URL = "https://advicemovie.000webhostapp.com";
 
     // Boolean telling us whether a download is in progress, so we don't trigger overlapping
     // downloads with consecutive button clicks.
@@ -99,11 +100,12 @@ SettingsFragment.OnFragmentInteractionListener{
         try {
             JSONObject obj = new JSONObject(result);
             JSONArray list = obj.getJSONArray("results");
-            final ArrayList<Movie> movie_list = new ArrayList<>();
+            final ArrayList<Movie> movieList = new ArrayList<>();
             ArrayList<String> movieTitles = new ArrayList<>();
+
             for (int i = 0; i<list.length(); i++){
-                movie_list.add(new Movie(list.getJSONObject(i)));
-                movieTitles.add(movie_list.get(i).toString());
+                movieList.add(new Movie(list.getJSONObject(i)));
+                movieTitles.add(movieList.get(i).toString());
             }
             ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
                     android.R.layout.simple_list_item_1, movieTitles);
@@ -113,7 +115,7 @@ SettingsFragment.OnFragmentInteractionListener{
             mLstShowMovie.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                     Intent intent = new Intent(view.getContext(), MovieDetailActivity.class);
-                    intent.putExtra(MOVIE_SELECTED, movie_list.get(position));
+                    intent.putExtra(MOVIE_SELECTED, movieList.get(position));
                     startActivity(intent);
                 }
             });

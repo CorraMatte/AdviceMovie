@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/navigation_movie_list"
+        android:icon="@drawable/ic_movie_list"
+        android:title="@string/title_movie_list" />
+
+    <item
+        android:id="@+id/navigation_movie_seen"
+        android:icon="@drawable/ic_movie_seen"
+        android:title="@string/settings" />
+
+
+    <item
+        android:id="@+id/navigation_search"
+        android:icon="@drawable/ic_search_movie"
+        android:title="@string/title_search" />
+
+    <item
+        android:id="@+id/navigation_advice_list"
+        android:icon="@drawable/ic_adviced_movie"
+        android:title="@string/title_advice_list" />
+
+    <item
+        android:id="@+id/navigation_settings"
+        android:icon="@drawable/ic_setting"
+        android:title="@string/settings" />
+
+</menu>
