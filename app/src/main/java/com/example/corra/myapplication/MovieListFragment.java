@@ -41,14 +41,13 @@ public class MovieListFragment extends Fragment{
     private OnFragmentInteractionListener mListener;
     private TextView txtListWelcolme;
 
-    private final String GETADVICE_URL = "/get_advice.php?";
+    private final String GET_ADVICE_URL = "/get_advice.php?";
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState){
         super.onActivityCreated(savedInstanceState);
         txtListWelcolme = (TextView) getActivity().findViewById(R.id.txtListWelcolme);
 
-        setFacebookName();
         retrieveMovies();
     }
 
@@ -80,7 +79,7 @@ public class MovieListFragment extends Fragment{
     /* Retrieve movie to see from the DB*/
     private void retrieveMovies(){
         AccessToken accessToken = AccessToken.getCurrentAccessToken();
-        String url = MainActivity.HOST_URL + GETADVICE_URL + "id=" + accessToken.getUserId();
+        String url = MainActivity.HOST_URL + GET_ADVICE_URL + "id=" + accessToken.getUserId();
         getJSON(url);
     }
 
@@ -88,10 +87,17 @@ public class MovieListFragment extends Fragment{
         ListView mLstShowMovie = (ListView) getActivity().findViewById(R.id.lstShowMovie);
         final ArrayList<Movie> movieList = new ArrayList<>();
         ArrayList<String> movieTitle = new ArrayList<>();
-
+        //System.out.println(result);
         /* Check the connection, if on download JSON advice list*/
         try {
             JSONArray list = new JSONArray(result);
+
+            if (list.length() == 0){
+                txtListWelcolme.setText(getString(R.string.title_movie_list_empty));
+                return;
+            }
+
+            setFacebookName();
             for (int i = 0; i<list.length(); i++){
                 movieTitle.add(list.getJSONObject(i).getString("title"));
                 movieList.add(new Movie(list.getJSONObject(i)));
@@ -105,7 +111,7 @@ public class MovieListFragment extends Fragment{
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                     Intent intent = new Intent(view.getContext(), MovieDetailActivity.class);
                     intent.putExtra(MainActivity.MOVIE_SELECTED, movieList.get(position));
-                    intent.putExtra("IS_IN_LIST", true);
+                    intent.putExtra(MovieDetailActivity.IS_IN_LIST, true);
                     startActivity(intent);
                 }
             });
