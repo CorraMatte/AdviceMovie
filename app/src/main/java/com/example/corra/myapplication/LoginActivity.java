@@ -33,7 +33,7 @@ public class LoginActivity extends AppCompatActivity {
 
         LoginManager.getInstance().logInWithReadPermissions(this, Arrays.asList("public_profile"));
         if (loggedIn){
-            openApp();
+            //openApp();
         }
 
         callbackManager = CallbackManager.Factory.create();

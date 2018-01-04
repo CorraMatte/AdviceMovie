@@ -51,23 +51,25 @@ public class ShareActivity extends AppCompatActivity {
                     public void onCompleted(GraphResponse response) {
                         // Insert your code here
                         JSONObject obj = response.getJSONObject();
-                        System.out.println(response);
                         try {
                             JSONArray array = obj.getJSONArray("data");
-                            ArrayList<String> friends = new ArrayList<>();
+                            ArrayList<Friend> friends = new ArrayList<>();
                             if (array.length() == 0){
                                 txtLeaveComment.setText(getString(R.string.txt_no_friends));
                                 txtComment.setVisibility(View.GONE);
                                 lstFriends.setVisibility(View.GONE);
                                 return;
                             }
+                            for (int i = 0; i < array.length(); i++)
+                                friends.add(new Friend(array.getJSONObject(i).getString("name"),
+                                                array.getJSONObject(i).getString("id")));
+
                             lstFriends.setAdapter(new ArrayAdapter<>(context,
                                     android.R.layout.simple_list_item_1, friends));
                             lstFriends.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                                    switch ((int) id) {
                                         // SEND DATA
-                                    }
+                                        shareMovieToFriend();
                                 }
                             });
 
@@ -77,5 +79,19 @@ public class ShareActivity extends AppCompatActivity {
                     }
                 });
         request.executeAsync();
+    }
+
+    public void shareMovieToFriend(){
+
+    }
+
+    private class Friend{
+        public String name;
+        public String id;
+
+        Friend(String name, String id){
+            this.name = name;
+            this.id = id;
+        }
     }
 }
