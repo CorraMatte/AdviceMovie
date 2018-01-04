@@ -23,7 +23,7 @@ import android.widget.ListView;
  */
 public class SettingsFragment extends Fragment {
 
-    private static final String[] SETTINGS = {"About", "Account"};
+    private static final String[] SETTINGS = {"Account", "About"};
     private OnFragmentInteractionListener mListener;
 
     @Override
@@ -109,11 +109,11 @@ public class SettingsFragment extends Fragment {
         lstSetting.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 switch ((int) id) {
-                    case 0: //ABOUT
-                        startActivity(new Intent(view.getContext(), AboutActivity.class));
-                        break;
-                    case 1: //FACEBOOK ACCOUNT INFO
+                    case 0: //FACEBOOK ACCOUNT INFO
                         startActivity(new Intent(view.getContext(), AccountActivity.class));
+                        break;
+                    case 1: //ABOUT
+                        startActivity(new Intent(view.getContext(), AboutActivity.class));
                         break;
                 }
             }

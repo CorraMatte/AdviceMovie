@@ -24,9 +24,14 @@ import java.net.URL;
 
 public class MovieDetailActivity extends AppCompatActivity {
 
-    final private String URL_IMAGE = "https://image.tmdb.org/t/p/w500";
-    final private String URL_INSERT_MOVIE = "/add_own_list.php";
-    final private String URL_DELETE_ADVICE = "/delete_auto_advice.php";
+
+    public static final String MOVIE_SEEN = "com.example.corra.myapplication.MOVIE_SEEN";
+    public static final String IS_IN_LIST = "com.example.corra.myapplication.IS_IN_LIST";
+
+    final static public String URL_IMAGE = "https://image.tmdb.org/t/p/w500";
+    final static private String URL_INSERT_MOVIE = "/add_own_list.php";
+    final static private String URL_DELETE_ADVICE = "/delete_auto_advice.php";
+    final static private String URL_SET_MOVIE_SEEN = "/set_movie_seen.php";
 
     private TextView txtDetailTitle;
     private TextView txtDetailOrigTitle;
@@ -37,6 +42,8 @@ public class MovieDetailActivity extends AppCompatActivity {
 
     private Button btnAdd;
     private Button btnDel;
+    private Button btnMovieSeen;
+
     private Movie movie;
 
     @Override
@@ -44,22 +51,38 @@ public class MovieDetailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_movie_detail);
 
-        /* Get the views */
+        bindFragmentViews();
+
+        btnAdd = (Button) findViewById(R.id.btnAdd);
+        btnDel = (Button) findViewById(R.id.btnDel);
+        btnMovieSeen = (Button) findViewById(R.id.btnMovieSeen);
+
+        movie = (Movie) getIntent().getParcelableExtra(MainActivity.MOVIE_SELECTED);
+        fillLayout();
+
+        boolean movieInList = getIntent().getBooleanExtra(IS_IN_LIST, false);
+        boolean movieSeen = getIntent().getBooleanExtra(MOVIE_SEEN, false);
+
+        if (!movieSeen)
+            if (movieInList) btnAdd.setVisibility(View.GONE);
+            else {
+                btnDel.setVisibility(View.GONE);
+                btnMovieSeen.setVisibility(View.GONE);
+            }
+        else{
+            btnAdd.setVisibility(View.GONE);
+            btnDel.setVisibility(View.GONE);
+            btnMovieSeen.setVisibility(View.GONE);
+        }
+    }
+
+    private void bindFragmentViews(){
         txtDetailTitle = (TextView) findViewById(R.id.txtDetailTitle);
         txtDetailOrigTitle = (TextView) findViewById(R.id.txtDetailOrigTitle);
         txtDetailRate = (TextView) findViewById(R.id.txtDetailRate);
         txtDetailOverview = (TextView) findViewById(R.id.txtDetailOverview);
         imgDetail = (ImageView) findViewById(R.id.imgDetail);
         txtReleaseDate = (TextView) findViewById(R.id.txtReleaseDate);
-        btnAdd = (Button) findViewById(R.id.btnAdd);
-        btnDel = (Button) findViewById(R.id.btnDel);
-
-        movie = (Movie) getIntent().getParcelableExtra(MainActivity.MOVIE_SELECTED);
-        fillLayout();
-
-        boolean movieInList = getIntent().getBooleanExtra("IS_IN_LIST", false);
-        if (movieInList) btnAdd.setVisibility(View.GONE);
-        else btnDel.setVisibility(View.GONE);
     }
 
     private void fillLayout(){
@@ -110,6 +133,7 @@ public class MovieDetailActivity extends AppCompatActivity {
     public void deleteAdvice(View view){
         JSONObject postData = new JSONObject();
         try {
+            /* DELETE AN AUTO ADVICE*/
             postData.put("id_movie", movie.id);
             postData.put("id_user", AccessToken.getCurrentAccessToken().getUserId());
             new SendDeviceDetails().execute(MainActivity.HOST_URL + URL_DELETE_ADVICE,
@@ -117,6 +141,25 @@ public class MovieDetailActivity extends AppCompatActivity {
         } catch (JSONException e) {
             e.printStackTrace();
         }
+    }
+
+    public void setMovieSeen(View view){
+        JSONObject postData = new JSONObject();
+        try {
+            /* DELETE AN AUTO ADVICE*/
+            postData.put("id_movie", movie.id);
+            postData.put("id_user", AccessToken.getCurrentAccessToken().getUserId());
+            new SendDeviceDetails().execute(MainActivity.HOST_URL + URL_SET_MOVIE_SEEN,
+                    postData.toString());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void shareMovie(View view){
+        Intent intent = new Intent(this, ShareActivity.class);
+        intent.putExtra(MainActivity.MOVIE_SELECTED, movie);
+        startActivity(intent);
     }
 
     private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
@@ -176,8 +219,9 @@ public class MovieDetailActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
+            //if (result.equals("movie_seen"))
             startActivity(new Intent(getApplicationContext(), MainActivity.class));
         }
     }
-    
+
 }

@@ -27,71 +27,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
-                <TextView
-                    android:id="@+id/txtDetailOrigTitle"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="16dp"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginTop="8dp"
-                    android:text="origTitle"
-                    android:textSize="24sp"
-                    app:layout_constraintEnd_toStartOf="@+id/imgDetail"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/txtDetailTitle" />
-
-                <TextView
-                    android:id="@+id/txtDetailTitle"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="16dp"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginTop="16dp"
-                    android:text="TITLE"
-                    android:textSize="30sp"
-                    app:layout_constraintEnd_toStartOf="@+id/imgDetail"
-                    app:layout_constraintHorizontal_bias="0.0"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <ImageView
-                    android:id="@+id/imgDetail"
-                    android:layout_width="160dp"
-                    android:layout_height="184dp"
-                    android:layout_marginEnd="16dp"
-                    android:layout_marginRight="16dp"
-                    android:layout_marginTop="16dp"
-                    android:contentDescription="@string/img_detail_desc"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <TextView
-                    android:id="@+id/txtDetailRate"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="16dp"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginTop="8dp"
-                    android:text="@string/txt_detail_rate"
-                    android:textSize="24sp"
-                    app:layout_constraintEnd_toStartOf="@+id/imgDetail"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/txtDetailOrigTitle" />
+                <include
+                    layout="@layout/fragment_movie_detail"
+                    android:layout_height="wrap_content" />
             </android.support.constraint.ConstraintLayout>
-
-            <TextView
-                android:id="@+id/txtDetailOverview"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="16dp"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="16dp"
-                android:layout_marginLeft="16dp"
-                android:layout_marginRight="16dp"
-                android:textSize="24sp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/constraintLayout2" />
 
             <Button
                 android:id="@+id/btnShare"
@@ -101,29 +40,61 @@
                 android:layout_marginEnd="16dp"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
+                android:onClick="shareMovie"
                 android:text="@string/btn_share"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/txtReleaseDate" />
+                app:layout_constraintTop_toBottomOf="@+id/constraintLayout2" />
 
-            <TextView
-                android:id="@+id/txtReleaseDate"
+            <Button
+                android:id="@+id/btnAdd"
+                style="@style/com_facebook_button"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="16dp"
-                android:layout_marginRight="16dp"
                 android:layout_marginStart="16dp"
-                android:layout_marginLeft="16dp"
-                android:layout_marginTop="8dp"
-                android:text="TextView"
-                android:textSize="24sp"
+                android:layout_marginTop="16dp"
+                android:onClick="sendMovie"
+                android:text="AGGIUNGI"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/txtDetailOverview" />
+                app:layout_constraintTop_toBottomOf="@+id/btnShare" />
+
+            <Button
+                android:id="@+id/btnMovieSeen"
+                style="@style/com_facebook_button"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="84dp"
+                android:onClick="setMovieSeen"
+                android:text="SEGNA COME VISTO"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/btnShare" />
+
+            <Button
+                android:id="@+id/btnDel"
+                style="@style/com_facebook_button"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:onClick="deleteAdvice"
+                android:text="CANCELLA"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/btnShare" />
+
 
         </android.support.constraint.ConstraintLayout>
+
     </ScrollView>
 
 </android.support.constraint.ConstraintLayout>

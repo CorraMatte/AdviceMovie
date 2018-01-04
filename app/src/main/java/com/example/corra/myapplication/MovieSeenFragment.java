@@ -29,81 +29,78 @@ import java.util.ArrayList;
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link AdviceListFragment.OnFragmentInteractionListener} interface
+ * {@link MovieSeenFragment.OnFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link AdviceListFragment#newInstance} factory method to
+ * Use the {@link MovieSeenFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class AdviceListFragment extends Fragment {
+public class MovieSeenFragment extends Fragment {
     private OnFragmentInteractionListener mListener;
 
-    public static final String ADVICE_ID = "com.example.corra.myapplication.ADVICE_ID";
+    private TextView txtMovieSeen;
+    private ListView lstMovieSeen;
 
-    private final String GET_MOVIE_TO_ACCEPT_URL = "/get_advice_to_accept.php";
-    private ListView lstShowAdvice;
-    private TextView txtTitleAdvice;
-    
+    private final static String URL_GET_MOVIE_SEEN = "/get_movie_seen.php";
+
+    public MovieSeenFragment() {
+        // Required empty public constructor
+    }
+
     @Override
     public void onActivityCreated(Bundle savedInstanceState){
         super.onActivityCreated(savedInstanceState);
-        lstShowAdvice = (ListView) getActivity().findViewById(R.id.lstShowAdvice);
-        txtTitleAdvice = (TextView) getActivity().findViewById(R.id.txtTitleAdvice);
-
-        getJSON(MainActivity.HOST_URL + GET_MOVIE_TO_ACCEPT_URL + "?id=" +
+        /* GET MOVIE SEEN FROM DB*/
+        lstMovieSeen = (ListView) getActivity().findViewById(R.id.lstMovieSeen);
+        txtMovieSeen = (TextView) getActivity().findViewById(R.id.txtMovieSeen);
+        getJSON(MainActivity.HOST_URL + URL_GET_MOVIE_SEEN + "?id=" +
                 AccessToken.getCurrentAccessToken().getUserId());
     }
 
-    private void UpdateMovieAdviceList(String result){
-        final ArrayList<Movie> movieList = new ArrayList<>();
-        ArrayList<String> movieTitle = new ArrayList<>();
-        final ArrayList<String> idAdvice = new ArrayList<>();
-        //System.out.println(result);
+    private void UpdateMovieSeenList(String result){
+            final ArrayList<Movie> movieList = new ArrayList<>();
+            ArrayList<String> movieTitle = new ArrayList<>();
+
         /* Check the connection, if on download JSON advice list*/
-        try {
-            JSONArray list = new JSONArray(result);
+            try {
+                JSONArray list = new JSONArray(result);
 
-            if (list.length() == 0){
-                txtTitleAdvice.setText(getString(R.string.title_advice_list_empty));
-                return;
-            }
-            txtTitleAdvice.setText(getString(R.string.title_advice_list));
-            for (int i = 0; i<list.length(); i++){
-                movieTitle.add(list.getJSONObject(i).getString("title"));
-                movieList.add(new Movie(list.getJSONObject(i)));
-                idAdvice.add(list.getJSONObject(i).getString("advice_id"));
-            }
-
-            ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(),
-                    android.R.layout.simple_list_item_1, movieTitle);
-            lstShowAdvice.setAdapter(adapter);
-
-            lstShowAdvice.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    Intent intent = new Intent(view.getContext(), MovieToAcceptActivity.class);
-                    intent.putExtra(MainActivity.MOVIE_SELECTED, movieList.get(position));
-                    intent.putExtra(ADVICE_ID, idAdvice.get(position));
-                    startActivity(intent);
+                if (list.length() == 0){
+                    txtMovieSeen.setText(getString(R.string.txt_movie_seen_empty));
+                    return;
                 }
-            });
+                txtMovieSeen.setText(getString(R.string.txt_movie_seen));
 
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-    }
+                for (int i = 0; i<list.length(); i++){
+                    movieTitle.add(list.getJSONObject(i).getString("title"));
+                    movieList.add(new Movie(list.getJSONObject(i)));
+                }
 
-    public AdviceListFragment(){
-        // Required empty public constructor
+                ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(),
+                        android.R.layout.simple_list_item_1, movieTitle);
+                lstMovieSeen.setAdapter(adapter);
+
+                lstMovieSeen.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                        Intent intent = new Intent(view.getContext(), MovieDetailActivity.class);
+                        intent.putExtra(MainActivity.MOVIE_SELECTED, movieList.get(position));
+                        intent.putExtra(MovieDetailActivity.MOVIE_SEEN, true);
+                        startActivity(intent);
+                    }
+                });
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
     }
 
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
+     @return A new instance of fragment MovieSeenFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static AdviceListFragment newInstance() {
-        AdviceListFragment fragment = new AdviceListFragment();
-        Bundle args = new Bundle();
-        fragment.setArguments(args);
+    public static MovieSeenFragment newInstance() {
+        MovieSeenFragment fragment = new MovieSeenFragment();
         return fragment;
     }
 
@@ -116,7 +113,7 @@ public class AdviceListFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_advice_list, container, false);
+        return inflater.inflate(R.layout.fragment_movie_seen, container, false);
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -158,7 +155,6 @@ public class AdviceListFragment extends Fragment {
         void onFragmentInteraction(Uri uri);
     }
 
-    //this method is actually fetching the json string
     private void getJSON(final String urlWebService) {
         /*
         * As fetching the json string is a network operation
@@ -182,7 +178,7 @@ public class AdviceListFragment extends Fragment {
             @Override
             protected void onPostExecute(String s) {
                 super.onPostExecute(s);
-                UpdateMovieAdviceList(s);
+                UpdateMovieSeenList(s);
             }
 
             //in this method we are fetching the json string

@@ -7,15 +7,15 @@
     tools:context="com.example.corra.myapplication.AccountActivity">
 
     <TextView
-        android:id="@+id/txtFacebookAge"
+        android:id="@+id/txtAccoutMovieAdvice"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
         android:layout_marginTop="32dp"
-        android:text="TextView"
+        android:text="@string/txt_account_movie_advice"
         android:textSize="24sp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/txtFacebookMail" />
+        app:layout_constraintTop_toBottomOf="@+id/txtTotalMovie" />
 
     <ImageView
         android:id="@+id/imgProfilePicture"
@@ -53,12 +53,12 @@
         app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
-        android:id="@+id/txtFacebookMail"
+        android:id="@+id/txtTotalMovie"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
         android:layout_marginTop="32dp"
-        android:text="TextView"
+        android:text="@string/txt_movie_seen"
         android:textSize="24sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/imgProfilePicture" />

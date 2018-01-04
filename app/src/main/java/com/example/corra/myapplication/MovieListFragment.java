@@ -41,7 +41,7 @@ public class MovieListFragment extends Fragment{
     private OnFragmentInteractionListener mListener;
     private TextView txtListWelcolme;
 
-    private final String GET_ADVICE_URL = "/get_advice.php?";
+    private final String GET_ADVICE_URL = "/get_accepted_advice.php";
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState){
@@ -79,7 +79,7 @@ public class MovieListFragment extends Fragment{
     /* Retrieve movie to see from the DB*/
     private void retrieveMovies(){
         AccessToken accessToken = AccessToken.getCurrentAccessToken();
-        String url = MainActivity.HOST_URL + GET_ADVICE_URL + "id=" + accessToken.getUserId();
+        String url = MainActivity.HOST_URL + GET_ADVICE_URL + "?id=" + accessToken.getUserId();
         getJSON(url);
     }
 

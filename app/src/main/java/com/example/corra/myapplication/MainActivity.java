@@ -28,7 +28,8 @@ public class MainActivity extends FragmentActivity implements DownloadCallback,
 MovieListFragment.OnFragmentInteractionListener,
 AdviceListFragment.OnFragmentInteractionListener,
 SearchMovieFragment.OnFragmentInteractionListener,
-SettingsFragment.OnFragmentInteractionListener{
+SettingsFragment.OnFragmentInteractionListener,
+MovieSeenFragment.OnFragmentInteractionListener{
 
     // Keep a reference to the NetworkFragment, which owns the AsyncTask object
     // that is used to execute network ops.
@@ -51,7 +52,9 @@ SettingsFragment.OnFragmentInteractionListener{
             switch (item.getItemId()) {
                 case R.id.navigation_movie_list:
                     selectedFragment = MovieListFragment.newInstance();
-                    /* Retrieve advice from DB */
+                    break;
+                case R.id.navigation_movie_seen:
+                    selectedFragment = MovieSeenFragment.newInstance();
                     break;
                 case R.id.navigation_search:
                     selectedFragment = SearchMovieFragment.newInstance();

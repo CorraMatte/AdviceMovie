@@ -50,7 +50,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".AccountActivity"></activity>
+        <activity android:name=".AccountActivity" />
+        <activity android:name=".ShareActivity" />
+        <activity android:name=".MovieToAcceptActivity"></activity>
     </application>
 
 </manifest>
