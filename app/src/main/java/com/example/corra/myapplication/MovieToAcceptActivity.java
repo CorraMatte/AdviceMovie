@@ -62,7 +62,7 @@ public class MovieToAcceptActivity extends AppCompatActivity {
         txtDetailOrigTitle.setText(orig_title);
 
         String rate = getString(R.string.txt_detail_rate) + " ";
-        if (movie.vote_average != 0) rate += movie.vote_average.toString();
+        if (movie.vote_average != 0) rate += movie.vote_average.toString() + "/10";
         else rate += "-";
         txtDetailRate.setText(rate);
 
