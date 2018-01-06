@@ -1,9 +1,6 @@
 package com.example.corra.myapplication;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -15,12 +12,6 @@ import com.facebook.AccessToken;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.io.DataOutputStream;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 
 public class MovieDetailActivity extends AppCompatActivity {
 
@@ -100,11 +91,12 @@ public class MovieDetailActivity extends AppCompatActivity {
         if (!movie.overview.equals("")) overview = movie.overview;
         txtDetailOverview.setText(overview);
 
-        if (!movie.poster_path.equals("")){
-            String url = URL_IMAGE + movie.poster_path;
+        if (!movie.poster_path.equals("null")){
+            String url = MovieDetailActivity.URL_IMAGE + movie.poster_path;
             // show The Image in a ImageView
             new DownloadImageTask(imgDetail).execute(url);
         }
+        else imgDetail.setVisibility(View.GONE);
 
         String release = "";
         if (!movie.release_date.equals(""))
@@ -123,7 +115,7 @@ public class MovieDetailActivity extends AppCompatActivity {
             postData.put("overview", movie.overview);
             postData.put("poster_path", movie.poster_path);
             postData.put("id_user", AccessToken.getCurrentAccessToken().getUserId());
-            new SendDeviceDetails().execute(MainActivity.HOST_URL + URL_INSERT_MOVIE,
+            new SendJson().execute(MainActivity.HOST_URL + URL_INSERT_MOVIE,
                     postData.toString());
         } catch (JSONException e) {
             e.printStackTrace();
@@ -136,7 +128,7 @@ public class MovieDetailActivity extends AppCompatActivity {
             /* DELETE AN AUTO ADVICE*/
             postData.put("id_movie", movie.id);
             postData.put("id_user", AccessToken.getCurrentAccessToken().getUserId());
-            new SendDeviceDetails().execute(MainActivity.HOST_URL + URL_DELETE_ADVICE,
+            new SendJson().execute(MainActivity.HOST_URL + URL_DELETE_ADVICE,
                     postData.toString());
         } catch (JSONException e) {
             e.printStackTrace();
@@ -149,7 +141,7 @@ public class MovieDetailActivity extends AppCompatActivity {
             /* DELETE AN AUTO ADVICE*/
             postData.put("id_movie", movie.id);
             postData.put("id_user", AccessToken.getCurrentAccessToken().getUserId());
-            new SendDeviceDetails().execute(MainActivity.HOST_URL + URL_SET_MOVIE_SEEN,
+            new SendJson().execute(MainActivity.HOST_URL + URL_SET_MOVIE_SEEN,
                     postData.toString());
         } catch (JSONException e) {
             e.printStackTrace();
@@ -162,65 +154,12 @@ public class MovieDetailActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
-        ImageView bmImage;
-
-        public DownloadImageTask(ImageView bmImage) {
-            this.bmImage = bmImage;
-        }
-
-        protected Bitmap doInBackground(String... urls) {
-            String urldisplay = urls[0];
-            Bitmap mIcon11 = null;
-            try {
-                InputStream in = new java.net.URL(urldisplay).openStream();
-                mIcon11 = BitmapFactory.decodeStream(in);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            return mIcon11;
-        }
-
-        protected void onPostExecute(Bitmap result) {
-            bmImage.setImageBitmap(result);
-        }
-    }
-
-    private class SendDeviceDetails extends AsyncTask<String, Void, String> {
-        @Override
-        protected String doInBackground(String... params) {
-            String data = "";
-            HttpURLConnection httpURLConnection = null;
-            try {
-                httpURLConnection = (HttpURLConnection) new URL(params[0]).openConnection();
-                httpURLConnection.setRequestMethod("POST");
-                httpURLConnection.setDoOutput(true);
-                DataOutputStream wr = new DataOutputStream(httpURLConnection.getOutputStream());
-                wr.writeBytes("PostData=" + params[1]);
-                wr.flush();
-                wr.close();
-                InputStream in = httpURLConnection.getInputStream();
-                InputStreamReader inputStreamReader = new InputStreamReader(in);
-                int inputStreamData = inputStreamReader.read();
-                while (inputStreamData != -1) {
-                    char current = (char) inputStreamData;
-                    inputStreamData = inputStreamReader.read();
-                    data += current;
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            } finally {
-                if (httpURLConnection != null) {
-                    httpURLConnection.disconnect();
-                }
-            }
-            return data;
-        }
+    private class SendJson extends SendJsonData{
         @Override
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
-            //if (result.equals("movie_seen"))
-            startActivity(new Intent(getApplicationContext(), MainActivity.class));
+            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+            startActivity(intent);
         }
     }
 

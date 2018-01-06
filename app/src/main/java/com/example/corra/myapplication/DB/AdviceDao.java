@@ -1,4 +1,4 @@
-package com.example.corra.myapplication;
+package com.example.corra.myapplication.DB;
 
 import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Delete;

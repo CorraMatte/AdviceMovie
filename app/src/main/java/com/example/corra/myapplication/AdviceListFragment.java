@@ -3,7 +3,6 @@ package com.example.corra.myapplication;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -19,10 +18,6 @@ import com.facebook.AccessToken;
 import org.json.JSONArray;
 import org.json.JSONException;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
 
 
@@ -38,6 +33,7 @@ public class AdviceListFragment extends Fragment {
     private OnFragmentInteractionListener mListener;
 
     public static final String ADVICE_ID = "com.example.corra.myapplication.ADVICE_ID";
+    public static final String USER_SENDER = "com.example.corra.myapplication.USER_SENDER";
 
     private final String GET_MOVIE_TO_ACCEPT_URL = "/get_advice_to_accept.php";
     private ListView lstShowAdvice;
@@ -49,14 +45,15 @@ public class AdviceListFragment extends Fragment {
         lstShowAdvice = (ListView) getActivity().findViewById(R.id.lstShowAdvice);
         txtTitleAdvice = (TextView) getActivity().findViewById(R.id.txtTitleAdvice);
 
-        getJSON(MainActivity.HOST_URL + GET_MOVIE_TO_ACCEPT_URL + "?id=" +
-                AccessToken.getCurrentAccessToken().getUserId());
+        new getJSON().execute(MainActivity.HOST_URL + GET_MOVIE_TO_ACCEPT_URL + "?id=" +
+                              AccessToken.getCurrentAccessToken().getUserId());
     }
 
     private void UpdateMovieAdviceList(String result){
         final ArrayList<Movie> movieList = new ArrayList<>();
         ArrayList<String> movieTitle = new ArrayList<>();
         final ArrayList<String> idAdvice = new ArrayList<>();
+        final ArrayList<String> nameUserSender = new ArrayList<>();
         //System.out.println(result);
         /* Check the connection, if on download JSON advice list*/
         try {
@@ -71,6 +68,8 @@ public class AdviceListFragment extends Fragment {
                 movieTitle.add(list.getJSONObject(i).getString("title"));
                 movieList.add(new Movie(list.getJSONObject(i)));
                 idAdvice.add(list.getJSONObject(i).getString("advice_id"));
+                nameUserSender.add(list.getJSONObject(i).getString("name_user_sender"));
+
             }
 
             ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(),
@@ -82,6 +81,7 @@ public class AdviceListFragment extends Fragment {
                     Intent intent = new Intent(view.getContext(), MovieToAcceptActivity.class);
                     intent.putExtra(MainActivity.MOVIE_SELECTED, movieList.get(position));
                     intent.putExtra(ADVICE_ID, idAdvice.get(position));
+                    intent.putExtra(USER_SENDER, nameUserSender.get(position));
                     startActivity(intent);
                 }
             });
@@ -158,62 +158,12 @@ public class AdviceListFragment extends Fragment {
         void onFragmentInteraction(Uri uri);
     }
 
-    //this method is actually fetching the json string
-    private void getJSON(final String urlWebService) {
-        /*
-        * As fetching the json string is a network operation
-        * And we cannot perform a network operation in main thread
-        * so we need an AsyncTask
-        * The constrains defined here are
-        * Void -> We are not passing anything
-        * Void -> Nothing at progress update as well
-        * String -> After completion it should return a string and it will be the json string
-        * */
-        class GetJSON extends AsyncTask<Void, Void, String> {
-
-            /*this method will be called before execution you can display a progress bar or something
-            so that user can understand that he should wait as network operation may take some time */
-            @Override
-            protected void onPreExecute() {
-                super.onPreExecute();
-            }
-
-            //this method will be called after execution so here we are displaying a toast with the json string
-            @Override
-            protected void onPostExecute(String s) {
-                super.onPostExecute(s);
-                UpdateMovieAdviceList(s);
-            }
-
-            //in this method we are fetching the json string
-            @Override
-            protected String doInBackground(Void... voids) {
-                try {
-                    //creating a URL
-                    URL url = new URL(urlWebService);
-                    //Opening the URL using HttpURLConnection
-                    HttpURLConnection con = (HttpURLConnection) url.openConnection();
-                    //StringBuilder object to read the string from the service
-                    StringBuilder sb = new StringBuilder();
-                    //We will use a buffered reader to read the string from service
-                    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(con.getInputStream()));
-                    //A simple string to read values from each line
-                    String json;
-                    //reading until we don't find null
-                    while ((json = bufferedReader.readLine()) != null) {
-                        //appending it to string builder
-                        sb.append(json + "\n");
-                    }
-                    //finally returning the read string
-                    return sb.toString().trim();
-                } catch (Exception e) {
-                    return null;
-                }
-            }
+    private class getJSON extends getJsonData{
+        //this method will be called after execution so here we are displaying a toast with the json string
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+            UpdateMovieAdviceList(s);
         }
-
-        //creating asynctask object and executing it
-        GetJSON getJSON = new GetJSON();
-        getJSON.execute();
     }
 }

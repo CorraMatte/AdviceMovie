@@ -29,17 +29,18 @@ public class LoginActivity extends AppCompatActivity {
         btnLogin = (LoginButton) findViewById(R.id.btnLogin);
         txtWelcome = (TextView) findViewById(R.id.txtWelcome);
 
-        boolean loggedIn = AccessToken.getCurrentAccessToken() == null;
+        boolean logged = AccessToken.getCurrentAccessToken() != null;
+        btnLogin.setReadPermissions("public_profile,user_friends");
+        /*LoginManager.getInstance().logInWithReadPermissions(this,
+                Arrays.asList("public_profile,user_friends")
+        );*/
 
-        LoginManager.getInstance().logInWithReadPermissions(this, Arrays.asList("public_profile"));
-        if (loggedIn){
-            //openApp();
+        if (logged){
+            openApp();
         }
 
         callbackManager = CallbackManager.Factory.create();
-        LoginManager.getInstance().logInWithReadPermissions(
-                this,
-                Arrays.asList("user_friends"));
+
         btnLogin.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
@@ -65,6 +66,10 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     public void openApp(){
+        LoginManager.getInstance().logInWithReadPermissions(
+                this,
+                Arrays.asList("user_friends")
+        );
         startActivity(new Intent(context, MainActivity.class));
     }
 }

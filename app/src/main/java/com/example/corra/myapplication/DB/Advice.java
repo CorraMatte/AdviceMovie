@@ -1,8 +1,10 @@
-package com.example.corra.myapplication;
+package com.example.corra.myapplication.DB;
 
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.ForeignKey;
 import android.arch.persistence.room.PrimaryKey;
+
+import com.example.corra.myapplication.User;
 
 /**
  * Created by corra on 02/01/18.
